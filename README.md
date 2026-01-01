@@ -1,1 +1,1 @@
-# sequelize-association
+# Sequelize Association
