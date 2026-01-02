@@ -2,6 +2,7 @@ import { User } from "./user.model.js";
 import { Profile } from "./profile.model.js";
 import { Cart } from "./cart.model.js";
 import { Post } from "./post.model.js";
+import { Course } from "./course.model.js";
 
 // one to one => association relationship
 User.hasOne(Profile, {
@@ -25,3 +26,7 @@ Post.belongsTo(User, {
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
+
+// many to many => association relationship
+User.belongsToMany(Course, { through: "UserCourses" });
+Course.belongsToMany(User, { through: "UserCourses" });
