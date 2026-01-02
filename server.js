@@ -3,6 +3,8 @@ dotenv.config();
 import express from "express";
 const app = express();
 import { sequelize } from "./config/dbConnection.js";
+const PORT = process.env.port;
+
 // models
 import "./models/user.model.js";
 import "./models/profile.model.js";
@@ -10,14 +12,14 @@ import "./models/cart.model.js";
 import "./models/association.js";
 //routes
 import { userRouter } from "./routes/user.routes.js";
-const PORT = process.env.port;
+import { postRouter } from "./routes/post.route.js";
+//middlewares
 
 app.use(express.json());
-app.use("/api/users", userRouter);
-app.get("/", (req, res) => {
-  res.send("Hello Server");
-});
+app.use("/api", userRouter);
+app.use("/api", postRouter);
 
+// DB Connection
 const dbConnection = async () => {
   try {
     await sequelize.sync({ force: false });
@@ -27,6 +29,10 @@ const dbConnection = async () => {
   }
 };
 dbConnection();
+// server running
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on  http://localhost:${PORT}`);
+});
+app.get("/", (req, res) => {
+  res.send("Hello Server");
 });

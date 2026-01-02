@@ -1,6 +1,8 @@
 import { Cart } from "../models/cart.model.js";
+import { Post } from "../models/post.model.js";
 import { Profile } from "../models/profile.model.js";
 import { User } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res) => {
   const { username, email, password } = req.body;
@@ -29,7 +31,23 @@ export const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json("user not found");
-    return res.status(200).json({ user });
+    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    return res.status(200).json({ user, accessToken });
+  } catch (error) {
+    return res.status(500).json("internal server error", error);
+  }
+};
+
+export const getOneUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id, {
+      include: [{ model: Profile }, { model: Post }],
+    });
+    if (!user) return res.status(401).json({ mesage: "user not found" });
+    return res.status(500).json(user);
   } catch (error) {
     return res.status(500).json("internal server error", error);
   }
